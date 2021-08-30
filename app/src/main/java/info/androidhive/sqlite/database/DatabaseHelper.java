@@ -1,5 +1,6 @@
 package info.androidhive.sqlite.database;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -78,7 +79,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             cursor.moveToFirst();
 
         // prepare note object
-        Note note = new Note(
+        @SuppressLint("Range") Note note = new Note(
                 cursor.getInt(cursor.getColumnIndex(Note.COLUMN_ID)),
                 cursor.getString(cursor.getColumnIndex(Note.COLUMN_NOTE)),
                 cursor.getString(cursor.getColumnIndex(Note.COLUMN_TIMESTAMP)));
@@ -89,6 +90,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return note;
     }
 
+    @SuppressLint("Range")
     public List<Note> getAllNotes() {
         List<Note> notes = new ArrayList<>();
 
@@ -131,14 +133,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return count;
     }
 
-    public int updateNote(Note note) {
+    public void updateNote(Note note) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(Note.COLUMN_NOTE, note.getNote());
 
         // updating row
-        return db.update(Note.TABLE_NAME, values, Note.COLUMN_ID + " = ?",
+        db.update(Note.TABLE_NAME, values, Note.COLUMN_ID + " = ?",
                 new String[]{String.valueOf(note.getId())});
     }
 

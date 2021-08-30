@@ -1,17 +1,15 @@
 package info.androidhive.sqlite.view;
 
-/**
- * Created by ravi on 20/02/18.
- */
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -23,10 +21,9 @@ import info.androidhive.sqlite.database.model.Note;
 
 public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.MyViewHolder> {
 
-    private Context context;
-    private List<Note> notesList;
+    private final List<Note> notesList;
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    public static class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView note;
         public TextView dot;
         public TextView timestamp;
@@ -41,10 +38,10 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.MyViewHolder
 
 
     public NotesAdapter(Context context, List<Note> notesList) {
-        this.context = context;
         this.notesList = notesList;
     }
 
+    @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
@@ -82,7 +79,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.MyViewHolder
             Date date = fmt.parse(dateStr);
             SimpleDateFormat fmtOut = new SimpleDateFormat("MMM d");
             return fmtOut.format(date);
-        } catch (ParseException e) {
+        } catch (ParseException ignored) {
 
         }
 

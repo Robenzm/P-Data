@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView android:layout_height="match_parent"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     android:paddingLeft="@dimen/activity_margin"
-    android:paddingRight="@dimen/activity_margin"
-    android:paddingTop="@dimen/activity_margin">
+    android:paddingTop="@dimen/activity_margin"
+    android:paddingRight="@dimen/activity_margin">
 
-    <TextView android:id="@+id/dialog_title"
+
+    <TextView
+        android:id="@+id/dialog_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/dimen_10"
@@ -19,15 +24,58 @@
         android:textStyle="normal" />
 
     <EditText
-        android:id="@+id/note"
+        android:id="@+id/hospital"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Hospital"
+        android:inputType="phone" />
+        <EditText
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Patient Name"
+            android:inputType="textCapWords" />
+
+        <EditText
+            android:id="@+id/age"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Patient Age"
+            android:inputType="number" />
+        <EditText
+            android:id="@+id/sex"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Patient Sex"
+            android:inputType="textCapWords" />
+
+    <EditText
+        android:id="@+id/conact"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Patient contact"
+        android:inputType="phone" />
+
+    <EditText
+        android:id="@+id/diagnosis"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
         android:gravity="top"
-        android:hint="@string/hint_enter_note"
+        android:hint="Diagnosis"
         android:inputType="textCapSentences|textMultiLine"
         android:lines="4"
-        android:textColorHint="@color/hint_enter_note"
+        android:textSize="@dimen/input_new_note" />
+    <EditText
+        android:id="@+id/treatment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:gravity="top"
+        android:hint="Treatment"
+        android:inputType="textCapSentences|textMultiLine"
+        android:lines="4"
         android:textSize="@dimen/input_new_note" />
 
 </LinearLayout>
+</ScrollView>

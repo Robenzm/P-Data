@@ -1,21 +1,26 @@
 package info.androidhive.sqlite.view;
 
-import android.content.DialogInterface;
+import static android.content.DialogInterface.BUTTON_NEGATIVE;
+import static android.content.DialogInterface.BUTTON_POSITIVE;
+
+import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +33,7 @@ import info.androidhive.sqlite.utils.RecyclerTouchListener;
 
 public class MainActivity extends AppCompatActivity {
     private NotesAdapter mAdapter;
-    private List<Note> notesList = new ArrayList<>();
-    private CoordinatorLayout coordinatorLayout;
-    private RecyclerView recyclerView;
+    private final List<Note> notesList = new ArrayList<>();
     private TextView noNotesView;
 
     private DatabaseHelper db;
@@ -39,24 +42,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        coordinatorLayout = findViewById(R.id.coordinator_layout);
-        recyclerView = findViewById(R.id.recycler_view);
+        RecyclerView recyclerView = findViewById(R.id.recycler_view);
         noNotesView = findViewById(R.id.empty_notes_view);
 
         db = new DatabaseHelper(this);
 
         notesList.addAll(db.getAllNotes());
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showNoteDialog(false, null, -1);
-            }
-        });
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(view -> showNoteDialog(false, null, -1));
 
         mAdapter = new NotesAdapter(this, notesList);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
@@ -67,11 +64,6 @@ public class MainActivity extends AppCompatActivity {
 
         toggleEmptyNotes();
 
-        /**
-         * On long press on RecyclerView item, open alert dialog
-         * with options to choose
-         * Edit and Delete
-         * */
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(this,
                 recyclerView, new RecyclerTouchListener.ClickListener() {
             @Override
@@ -89,10 +81,11 @@ public class MainActivity extends AppCompatActivity {
      * Inserting new note in db
      * and refreshing the list
      */
-    private void createNote(String note) {
+    @SuppressLint("NotifyDataSetChanged")
+    private void createNote( String name, String sex, String age, String contact,String diagnosis,String hospital,String treatment) {
         // inserting note in db and getting
         // newly inserted note id
-        long id = db.insertNote(note);
+        long id = db.insertNote(hospital + "\n"+name + "\n" + sex + "-" + age + "-" + contact  +"\n" + diagnosis +"\n" + treatment);
 
         // get the newly inserted note from db
         Note n = db.getNote(id);
@@ -148,18 +141,15 @@ public class MainActivity extends AppCompatActivity {
      * Delete - 0
      */
     private void showActionsDialog(final int position) {
-        CharSequence colors[] = new CharSequence[]{"Edit", "Delete"};
+        CharSequence[] colors = new CharSequence[]{"Edit", "Delete"};
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Choose option");
-        builder.setItems(colors, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (which == 0) {
-                    showNoteDialog(true, notesList.get(position), position);
-                } else {
-                    deleteNote(position);
-                }
+        builder.setItems(colors, (dialog, which) -> {
+            if (which == 0) {
+                showNoteDialog(true, notesList.get(position), position);
+            } else {
+                deleteNote(position);
             }
         });
         builder.show();
@@ -176,10 +166,17 @@ public class MainActivity extends AppCompatActivity {
         LayoutInflater layoutInflaterAndroid = LayoutInflater.from(getApplicationContext());
         View view = layoutInflaterAndroid.inflate(R.layout.note_dialog, null);
 
-        AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(MainActivity.this);
+        AlertDialog alertDialogBuilderUserInput = new MaterialAlertDialogBuilder(MainActivity.this).create();
         alertDialogBuilderUserInput.setView(view);
 
         final EditText inputNote = view.findViewById(R.id.note);
+        final EditText name = view.findViewById(R.id.name);
+        final EditText age = view.findViewById(R.id.age);
+        final EditText sex = view.findViewById(R.id.sex);
+        final EditText contact = view.findViewById(R.id.conact);
+        final EditText hospital = view.findViewById(R.id.hospital);
+        final EditText diagnosis = view.findViewById(R.id.diagnosis);
+        final EditText treatment = view.findViewById(R.id.treatment);
         TextView dialogTitle = view.findViewById(R.id.dialog_title);
         dialogTitle.setText(!shouldUpdate ? getString(R.string.lbl_new_note_title) : getString(R.string.lbl_edit_note_title));
 
@@ -187,41 +184,31 @@ public class MainActivity extends AppCompatActivity {
             inputNote.setText(note.getNote());
         }
         alertDialogBuilderUserInput
-                .setCancelable(false)
-                .setPositiveButton(shouldUpdate ? "update" : "save", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialogBox, int id) {
+                .setCancelable(false);
+        alertDialogBuilderUserInput.setButton(BUTTON_POSITIVE
+                , (shouldUpdate ? "update" : "save"), (dialogBox, id) -> {
 
-                    }
-                })
-                .setNegativeButton("cancel",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialogBox, int id) {
-                                dialogBox.cancel();
-                            }
-                        });
+                });
+        alertDialogBuilderUserInput.setButton(BUTTON_NEGATIVE, "cancel",
+                (dialogBox, id) -> dialogBox.cancel());
+        alertDialogBuilderUserInput.show();
 
-        final AlertDialog alertDialog = alertDialogBuilderUserInput.create();
-        alertDialog.show();
+        alertDialogBuilderUserInput.getButton(BUTTON_POSITIVE).setOnClickListener(v -> {
+            // Show toast message when no text is entered
+            if (TextUtils.isEmpty(inputNote.getText().toString())) {
+                Toast.makeText(MainActivity.this, "Enter note!", Toast.LENGTH_SHORT).show();
+                return;
+            } else {
+                alertDialogBuilderUserInput.dismiss();
+            }
 
-        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Show toast message when no text is entered
-                if (TextUtils.isEmpty(inputNote.getText().toString())) {
-                    Toast.makeText(MainActivity.this, "Enter note!", Toast.LENGTH_SHORT).show();
-                    return;
-                } else {
-                    alertDialog.dismiss();
-                }
-
-                // check if user updating note
-                if (shouldUpdate && note != null) {
-                    // update note by it's id
-                    updateNote(inputNote.getText().toString(), position);
-                } else {
-                    // create new note
-                    createNote(inputNote.getText().toString());
-                }
+            // check if user updating note
+            if (shouldUpdate && note != null) {
+                // update note by it's id
+                updateNote(inputNote.getText().toString(), position);
+            } else {
+                // create new note
+                createNote( name.getEditableText().toString(), sex.getEditableText().toString(), age.getEditableText().toString(), contact.getEditableText().toString(), diagnosis.getEditableText().toString(), hospital.getEditableText().toString(), treatment.getEditableText().toString());
             }
         });
     }
