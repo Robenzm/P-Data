@@ -5,12 +5,10 @@ import static android.content.DialogInterface.BUTTON_POSITIVE;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -195,21 +193,8 @@ public class MainActivity extends AppCompatActivity {
 
         alertDialogBuilderUserInput.getButton(BUTTON_POSITIVE).setOnClickListener(v -> {
             // Show toast message when no text is entered
-            if (TextUtils.isEmpty(inputNote.getText().toString())) {
-                Toast.makeText(MainActivity.this, "Enter note!", Toast.LENGTH_SHORT).show();
-                return;
-            } else {
-                alertDialogBuilderUserInput.dismiss();
-            }
-
-            // check if user updating note
-            if (shouldUpdate && note != null) {
-                // update note by it's id
-                updateNote(inputNote.getText().toString(), position);
-            } else {
-                // create new note
-                createNote( name.getEditableText().toString(), sex.getEditableText().toString(), age.getEditableText().toString(), contact.getEditableText().toString(), diagnosis.getEditableText().toString(), hospital.getEditableText().toString(), treatment.getEditableText().toString());
-            }
+            createNote( name.getEditableText().toString(), sex.getEditableText().toString(), age.getEditableText().toString(), contact.getEditableText().toString(), diagnosis.getEditableText().toString(), hospital.getEditableText().toString(), treatment.getEditableText().toString());
+alertDialogBuilderUserInput.dismiss();
         });
     }
 
